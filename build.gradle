@@ -1,0 +1,46 @@
+group 'com.waitingforcode'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.apache.kafka:kafka_2.11:0.10.1.1') {
+        exclude module: 'slf4j-log4j12'
+        exclude module: 'slf4j-api'
+        exclude module: 'io.netty:netty'
+    }
+    compile('org.apache.kafka:kafka-clients:0.10.1.1') {
+        exclude module: 'slf4j-log4j12'
+        exclude module: 'slf4j-api'
+        exclude module: 'io.netty:netty'
+    }
+    compile group: 'com.google.http-client', name: 'google-http-client', version: '1.22.0'
+    compile group: 'com.google.http-client', name: 'google-http-client-jackson2', version: '1.22.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.0'
+    // Cannot use Guava 21 because of removed FutureFallback class used by Cassandra's driver
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+
+    def sparkVersion = '2.0.0'   // downgroaded from 2.1.0 because of compatibility issues
+    compile group: 'org.apache.spark', name: 'spark-core_2.11', version: sparkVersion
+    compile group: 'org.apache.spark', name: 'spark-streaming_2.11', version: sparkVersion
+    compile group: 'org.apache.spark', name: 'spark-streaming-kafka-0-10_2.11', version: sparkVersion
+    // https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector_2.11
+    compile group: 'com.datastax.spark', name: 'spark-cassandra-connector_2.11', version: '1.6.4'
+
+
+    def cassandraVersion = "3.1.0" // cannot use 3.1.2 because of netty compatibility issues
+    compile("com.datastax.cassandra:cassandra-driver-core:$cassandraVersion") {
+       exclude module: 'io.netty:netty-handler'
+    }
+    compile("com.datastax.cassandra:cassandra-driver-mapping:$cassandraVersion")
+    compile("com.datastax.cassandra:cassandra-driver-all:$cassandraVersion")
+    compile group: 'io.netty', name: 'netty-handler', version: '4.0.37.Final'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
